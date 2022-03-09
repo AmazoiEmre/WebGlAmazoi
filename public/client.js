@@ -71,14 +71,6 @@ window.addEventListener('load', function() {
 		
 	});//END_SOCKET.ON
 	
-	socket.on('UPDATE_SOUND',function(id) {
-		var currentUserAtr=id;
-		if(window.unityInstance!=null)
-		{
-			window.unityInstance.SendMessage('NetworkManager','OnUpdateSound',currentUserAtr);
-		}
-		
-	});
 		        
 	socket.on('USER_DISCONNECTED', function(id) {
 	
