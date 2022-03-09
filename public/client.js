@@ -17,28 +17,18 @@ window.addEventListener('load', function() {
 	};
 
 	
-	socket.on('JOIN_SUCCESS', function(id,name,position,total_players) {
+	socket.on('JOIN_SUCCESS', function(id,name,avatar,position) {
 				      		
-	  var currentUserAtr = id+':'+name+':'+position+':'+total_players;
+	  var currentUserAtr = id+':'+name+':'+avatar+':'+position;
 	 if(window.unityInstance!=null)
 		{
 		 window.unityInstance.SendMessage ('NetworkManager', 'OnJoinGame', currentUserAtr);
 		}
 	  
 	});
-	
-	socket.on('RESPAWN_PLAYER', function(id,name,position) {
+	socket.on('SPAWN_PLAYER', function(id,name,avatar,position) {
 				      		
-	  var currentUserAtr = id+':'+name+':'+position;
-	 if(window.unityInstance!=null)
-		{
-		 window.unityInstance.SendMessage ('NetworkManager', 'OnRespawPlayer', currentUserAtr);
-		}
-	  
-	});
-	socket.on('SPAWN_PLAYER', function(id,name,position,total_players) {
-				      		
-	  var currentUserAtr = id+':'+name+':'+position+':'+total_players;
+	  var currentUserAtr = id+':'+name+':'+avatar+':'+position;
 	   if(window.unityInstance!=null)
 		{
 		  window.unityInstance.SendMessage ('NetworkManager', 'OnSpawnPlayer', currentUserAtr);
@@ -56,19 +46,6 @@ window.addEventListener('load', function() {
 		}
 	 
 	});
-	
-	 socket.on('UPDATE_PLAYER_ANIMATOR', function(id,animation) {
-	 
-	     var currentUserAtr = id+':'+animation;
-		
-		 if(window.unityInstance!=null)
-		{
-		  
-		   // sends the package currentUserAtr to the method OnUpdateAnim in the NetworkManager class on Unity 
-		   window.unityInstance.SendMessage ('NetworkManager', 'OnUpdateAnim',currentUserAtr);
-		}
-		
-	});//END_SOCKET.ON
 	
 	socket.on('UPDATE_BEST_KILLER', function(name,ranking,kills) {
 				      		
@@ -93,9 +70,9 @@ window.addEventListener('load', function() {
 	
 	
 
-	  socket.on('UPDATE_SHOOT', function(id,target) {
+	  socket.on('UPDATE_SHOOT', function(id,currentGun) {
 				      		
-	  var currentUserAtr = id+":"+target;
+	  var currentUserAtr = id+":"+currentGun;
 	  
 	  if(window.unityInstance!=null)
 		{
@@ -104,27 +81,25 @@ window.addEventListener('load', function() {
 	 
 	});	
 	
-   socket.on('UPDATE_PLAYER_DAMAGE', function(shooterID,targetID,health) {
+   socket.on('UPDATE_PLAYER_DAMAGE', function(id,health) {
 				      		
-	  var currentUserAtr = shooterID+':'+targetID+':'+health;
+	  var currentUserAtr = id+':'+health;
 	  if(window.unityInstance!=null)
 		{
 		 window.unityInstance.SendMessage ('NetworkManager', 'OnUpdatePlayerDamage', currentUserAtr);
 		}
 	  
 	});	
-	
-	socket.on('DEATH', function(id) {
-				      		
-	  var currentUserAtr = id+":"+"";
-	  
-	  if(window.unityInstance!=null)
-		{
-		  window.unityInstance.SendMessage ('NetworkManager', 'OnPlayerDeath', currentUserAtr);
-		}
-	 
-	});	
 
+ socket.on('GAME_OVER', function(target_id,shooter_id,shooter_kills) {
+				      		
+	  var currentUserAtr = target_id+":"+shooter_id+":"+shooter_kills;
+	   if(window.unityInstance!=null)
+		{
+		 window.unityInstance.SendMessage ('NetworkManager', 'OnGameOver', currentUserAtr);
+		}
+	  
+	});	
 	
 
  socket.on('USER_DISCONNECTED', function(id) {

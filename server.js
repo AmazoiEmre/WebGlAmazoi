@@ -84,16 +84,15 @@ socket.on("JOIN_ROOM",function(_data){
 
     name : pack.name,
     id: socket.id,
+	avatar: pack.avatar,
 	position:pack.position,
 	rotation:'',
-	animation:"",
 	health:100,
 	maxHealth:100,
 	kills:0,
 	isDead:false
 	
   };//new user  in clients list
-  
   
   console.log("[INFO] player " + current_player.id + ": logged!");
   
@@ -105,11 +104,11 @@ socket.on("JOIN_ROOM",function(_data){
   
   console.log ("[INFO] Total players: " + Object.keys(clientLookup).length);
 
-  socket.emit("JOIN_SUCCESS",current_player.id,current_player.name,current_player.position,Object.keys(clientLookup).length);
+  socket.emit("JOIN_SUCCESS",current_player.id,current_player.name,current_player.avatar,current_player.position);
  
   
    // spawn current_player client on clients in broadcast
-  socket.broadcast.emit('SPAWN_PLAYER',current_player.id,current_player.name,current_player.position,Object.keys(clientLookup).length);
+  socket.broadcast.emit('SPAWN_PLAYER',current_player.id,current_player.name,current_player.avatar,current_player.position);
 
    //spawn all connected clients for current_player client 
   for(client in clientLookup)
@@ -117,8 +116,7 @@ socket.on("JOIN_ROOM",function(_data){
     if(clientLookup[client].id!=current_player.id)
     {
       
-	  socket.emit('SPAWN_PLAYER',clientLookup[client].id,clientLookup[client].name,clientLookup[client].position,
-	  Object.keys(clientLookup).length);
+	  socket.emit('SPAWN_PLAYER',clientLookup[client].id,clientLookup[client].name,clientLookup[client].avatar,clientLookup[client].position);
     }
   }
   
@@ -136,7 +134,8 @@ socket.on("RESPAWN",function(_data){
 	  
 	  clientLookup[current_player.id].isDead = false;
 	  clientLookup[current_player.id].health = current_player.maxHealth;
-	 
+	  clientLookup[current_player.id].avatar = pack.avatar;
+	  clientLookup[current_player.id].position =pack.position;
 	  
 	   for (var i = 0; i < clients.length; i++)
 		 {
@@ -147,18 +146,17 @@ socket.on("RESPAWN",function(_data){
 			};
 		};
 		 
-	   socket.emit("RESPAWN_PLAYER",current_player.id,current_player.name,current_player.position);
+	  socket.emit("JOIN_SUCCESS",current_player.id,current_player.name,current_player.avatar,current_player.position);
  
   
-      socket.broadcast.emit('SPAWN_PLAYER',current_player.id,current_player.name,current_player.position,Object.keys(clientLookup).length);
+      socket.broadcast.emit('SPAWN_PLAYER',current_player.id,current_player.name,current_player.avatar,current_player.position);
 
 
       for(client in clientLookup)
       {
          if(clientLookup[client].id!=current_player.id)
          {
-            socket.emit('SPAWN_PLAYER',clientLookup[client].id,clientLookup[client].name,clientLookup[client].position,
-	  Object.keys(clientLookup).length);
+            socket.emit('SPAWN_PLAYER',clientLookup[client].id,clientLookup[client].name,clientLookup[client].avatar,clientLookup[client].position);
          }
       }
 	}
@@ -175,9 +173,9 @@ socket.on("POS_AND_ROT",function(_data){
   {
      var pack = JSON.parse(_data);
  
-     clientLookup[current_player.id].position = pack.position;
+     current_player.position = pack.position;
  
-     clientLookup[current_player.id].rotation = pack.rotation;
+     current_player.rotation = pack.rotation;
  
      // send current user position and  rotation in broadcast to all clients in game
      socket.broadcast.emit('UPDATE_POS_AND_ROT',current_player.id,current_player.position,current_player.rotation);
@@ -186,32 +184,24 @@ socket.on("POS_AND_ROT",function(_data){
 
 });//END_SOCKET.ON
 
-//create a callback fuction to listening EmitAnimation() method in NetworkMannager.cs unity script
-	socket.on('ANIMATION', function (_data)
-	{
-	  var data = JSON.parse(_data);	
-	  
-	  if(current_player)
-	  {
-	   
-	   
-	    //send to the client.js script
-	   //updates the animation of the player for the other game clients
-       socket.broadcast.emit('UPDATE_PLAYER_ANIMATOR', current_player.id,data.animation);
-	
-	   
-      }//END_IF
-	  
-	});//END_SOCKET_ON
-
 //create a callback fuction to listening EmitShoot() method in Shooter3DNetworkMannager.cs unity script
 socket.on("SHOOT",function(_data){
   
-  var data = JSON.parse(_data);	
+  if(current_player)
+  {
+   var pack = JSON.parse(_data);
+   socket.broadcast.emit("UPDATE_SHOOT",current_player.id,pack.currentGun);
+  }
+  
+
+});//END_SOCKET.ON
+
+//create a callback fuction to listening EmitShoot() method in Shooter3DNetworkMannager.cs unity script
+socket.on("CHANGE_BUSTER",function(_data){
   
   if(current_player)
   {
-   socket.broadcast.emit("UPDATE_SHOOT",current_player.id,data.target);
+   socket.broadcast.emit("UPDATE_BUSTER",current_player.id);
   }
   
 
@@ -229,54 +219,55 @@ socket.on('GET_BEST_KILLERS',function(){
 
 });//END_SOCKET.ON
 
-socket.on('SHOOT_DAMAGE',function(_data){
+socket.on('DAMAGE',function(_data){
 
-   console.log('receive shoot damage');
-  
-   
    var pack = JSON.parse(_data);
    
-   var shooter =  clientLookup[pack.shooterId];
-   
-   var target = clientLookup[pack.targetId];
-   
+   var target = clientLookup[pack.target_id];
    
    var _damage = 10;
    
-   if(target.health - _damage > 0)
+   if(target)
    {
+	    
+	 if(target.health - _damage > 0)
+     {
 			   
-	 target.health -=_damage;
-	
+	    target.health -=_damage;
+		
 	 
-  }
+      }
   
-   else
-  {
+      else
+      {
   
-     for (var i = 0; i < clients.length; i++)
+         for (var i = 0; i < clients.length; i++)
 		 {
 			if (clients[i].id ==  target.id) 
 			{
 			    clients[i].isDead = true;
 				
 			};
-		};
+		  };
       
-
-	  shooter.kills +=1;
+	      var shooter =  clientLookup[pack.shooter_id];
+	      shooter.kills +=1;
 	  
-      socket.emit('DEATH',target.id);
+          socket.emit('GAME_OVER',target.id,shooter.id,shooter.kills);
 	  
-	  socket.broadcast.emit('DEATH',target.id);
+	      socket.broadcast.emit('GAME_OVER',target.id,shooter.id,shooter.kills);
 			   
-  }
+       }
   
-  socket.emit("UPDATE_PLAYER_DAMAGE",shooter.id,target.id,target.health);	   
+       socket.emit("UPDATE_PLAYER_DAMAGE",target.id,target.health);	   
 
-  socket.broadcast.emit("UPDATE_PLAYER_DAMAGE",shooter.id,target.id,target.health);
+	   socket.broadcast.emit("UPDATE_PLAYER_DAMAGE",target.id,target.health);
 
 		
+	   
+   }
+   
+  
 
 });//END_SOCKET.ON
 
