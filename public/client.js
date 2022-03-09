@@ -8,110 +8,85 @@ window.addEventListener('load', function() {
 		
 		var args = Array.prototype.slice.call(arguments, 1);
 		
-		if(window.unityInstance!=null)
+		f(window.unityInstance!=null)
 		{
+		  //fit formats the message to send to the Unity client game, take a look in NetworkManager.cs in Unity
 		  window.unityInstance.SendMessage("NetworkManager", method, args.join(':'));
+		
 		}
 		
-		
-	};
+	};//END_exe_In_Unity 
 
 	
-	socket.on('JOIN_SUCCESS', function(id,name,avatar,position) {
+	socket.on('PONG', function(socket_id,msg) {
 				      		
-	  var currentUserAtr = id+':'+name+':'+avatar+':'+position;
+	  var currentUserAtr = socket_id+':'+msg;
+	  
 	 if(window.unityInstance!=null)
 		{
-		 window.unityInstance.SendMessage ('NetworkManager', 'OnJoinGame', currentUserAtr);
+		 
+		  window.unityInstance.SendMessage ('NetworkManager', 'OnPrintPongMsg', currentUserAtr);
+		
 		}
 	  
-	});
-	socket.on('SPAWN_PLAYER', function(id,name,avatar,position) {
+	});//END_SOCKET.ON
+
+					      
+	socket.on('LOGIN_SUCCESS', function(id,name,position) {
 				      		
-	  var currentUserAtr = id+':'+name+':'+avatar+':'+position;
+	  var currentUserAtr = id+':'+name+':'+position;
+	  
 	   if(window.unityInstance!=null)
 		{
+		 
+		  window.unityInstance.SendMessage ('NetworkManager', 'OnJoinGame', currentUserAtr);
+		
+		}
+	  
+	});//END_SOCKET.ON
+	
+		
+	socket.on('SPAWN_PLAYER', function(id,name,position) {
+	
+	    var currentUserAtr = id+':'+name+':'+position;
+		
+		if(window.unityInstance!=null)
+		{
+	     // sends the package currentUserAtr to the method OnSpawnPlayer in the NetworkManager class on Unity
 		  window.unityInstance.SendMessage ('NetworkManager', 'OnSpawnPlayer', currentUserAtr);
+		
 		}
-	 
-	});
-	
-	socket.on('UPDATE_POS_AND_ROT', function(id,position,rotation) {
-				      		
-	  var currentUserAtr = id+':'+position+":"+rotation;
-	  
-	  if(window.unityInstance!=null)
-		{
-		 window.unityInstance.SendMessage ('NetworkManager', 'OnUpdatePosAndRot', currentUserAtr);
-		}
-	 
-	});
-	
-	socket.on('UPDATE_BEST_KILLER', function(name,ranking,kills) {
-				      		
-	  var currentUserAtr = name+":"+ranking+":"+kills;
-	   if(window.unityInstance!=null)
-		{
-		  window.unityInstance.SendMessage ('NetworkManager', 'OnUpdateBestKillers', currentUserAtr);
-		}
-	 
-	});
-	
-	 socket.on('UPDATE_BUSTER', function(id) {
-				      		
-	  var currentUserAtr = id+":"+"";
-	  
-	  if(window.unityInstance!=null)
-		{
-		  window.unityInstance.SendMessage ('NetworkManager', 'OnUpdateBuster', currentUserAtr);
-		}
-	 
-	});	
-	
+		
+	});//END_SOCKET.ON
 	
 
-	  socket.on('UPDATE_SHOOT', function(id,currentGun) {
-				      		
-	  var currentUserAtr = id+":"+currentGun;
-	  
-	  if(window.unityInstance!=null)
-		{
-		  window.unityInstance.SendMessage ('NetworkManager', 'OnUpdateShoot', currentUserAtr);
-		}
-	 
-	});	
 	
-   socket.on('UPDATE_PLAYER_DAMAGE', function(id,health) {
-				      		
-	  var currentUserAtr = id+':'+health;
-	  if(window.unityInstance!=null)
+    socket.on('UPDATE_MOVE_AND_ROTATE', function(id,position,rotation) {
+	     var currentUserAtr = id+':'+position+':'+rotation;
+		 	
+		 if(window.unityInstance!=null)
 		{
-		 window.unityInstance.SendMessage ('NetworkManager', 'OnUpdatePlayerDamage', currentUserAtr);
+		   window.unityInstance.SendMessage ('NetworkManager', 'OnUpdateMoveAndRotate',currentUserAtr);
 		}
-	  
-	});	
-
- socket.on('GAME_OVER', function(target_id,shooter_id,shooter_kills) {
-				      		
-	  var currentUserAtr = target_id+":"+shooter_id+":"+shooter_kills;
-	   if(window.unityInstance!=null)
+		
+	});//END_SOCKET.ON
+	
+		        
+	socket.on('USER_DISCONNECTED', function(id) {
+	
+	     var currentUserAtr = id;
+		 
+		if(window.unityInstance!=null)
 		{
-		 window.unityInstance.SendMessage ('NetworkManager', 'OnGameOver', currentUserAtr);
+		  
+		 window.unityInstance.SendMessage ('NetworkManager', 'OnUserDisconnected', currentUserAtr);
+		
+		
 		}
-	  
-	});	
+		 
+	
+	});//END_SOCKET.ON
 	
 
- socket.on('USER_DISCONNECTED', function(id) {
-				      		
-	  var currentUserAtr = id+":"+" ";
-	  if(window.unityInstance!=null)
-		{
-		  window.unityInstance.SendMessage ('NetworkManager', 'OnUserDisconnected', currentUserAtr);
-		}
-	 
-	});		
-
-
-});//END_WINDOW.ADDEVENTLISTENER
+});//END_window_addEventListener
 
