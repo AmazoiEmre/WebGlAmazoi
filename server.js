@@ -122,7 +122,7 @@ io.on('connection', function(socket){
   
 		if(currentUser)
 		{
-			socket.broadcast.emit("ON_UPDATE_SOUND",currentUser.id);   
+			socket.broadcast.emit('ON_UPDATE_SOUND',currentUser.id);   
 		}
 		
 });//END_SOCKET.ON
