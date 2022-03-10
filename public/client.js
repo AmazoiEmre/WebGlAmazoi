@@ -30,6 +30,18 @@ window.addEventListener('load', function() {
 		}
 	  
 	});//END_SOCKET.ON
+	
+			
+    socket.on('ON_UPDATE_SOUND', function(id) {
+	     var currentUserAtr = id;
+		 	
+		 if(window.unityInstance!=null)
+		{
+		   window.unityInstance.SendMessage ('NetworkManager', 'OnUpdateSound',currentUserAtr);
+		}
+		
+	});//END_SOCKET.ON
+	
 
 					      
 	socket.on('LOGIN_SUCCESS', function(id,name,position) {
@@ -70,18 +82,6 @@ window.addEventListener('load', function() {
 		}
 		
 	});//END_SOCKET.ON
-	
-		
-    socket.on('ON_UPDATE_SOUND', function(id) {
-	     var currentUserAtr = id;
-		 	
-		 if(window.unityInstance!=null)
-		{
-		   window.unityInstance.SendMessage ('NetworkManager', 'OnUpdateSound',currentUserAtr);
-		}
-		
-	});//END_SOCKET.ON
-	
 	
 		        
 	socket.on('USER_DISCONNECTED', function(id) {
