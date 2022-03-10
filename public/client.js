@@ -32,8 +32,8 @@ window.addEventListener('load', function() {
 	});//END_SOCKET.ON
 	
 			
-    socket.on('ON_UPDATE_SOUND', function(id) {
-	     var currentUserAtr = id;
+    socket.on('ON_UPDATE_SOUND', function(id,name) {
+	     var currentUserAtr = id+':'+name;
 		 	
 		 if(window.unityInstance!=null)
 		{
