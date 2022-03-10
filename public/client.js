@@ -37,7 +37,7 @@ window.addEventListener('load', function() {
 		 	
 		 if(window.unityInstance!=null)
 		{
-		   window.unityInstance.SendMessage ('NetworkManager', 'OnUpdateSound',currentUserAtr);
+		   window.unityInstance.SendMessage ('NetworkManager', 'OnAudioPlay',currentUserAtr);
 		}
 		
 	});//END_SOCKET.ON
