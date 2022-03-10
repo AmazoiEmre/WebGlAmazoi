@@ -115,6 +115,18 @@ io.on('connection', function(socket){
        }
 	});//END_SOCKET_ON
 	
+	socket.on("SOUND",function(_data)
+	{
+  
+		var data = JSON.parse(_data);	
+  
+		if(currentUser)
+		{
+			socket.broadcast.emit("ON_UPDATE_SOUND",currentUser.id);   
+		}
+		
+});//END_SOCKET.ON
+	
 	
 	
 
