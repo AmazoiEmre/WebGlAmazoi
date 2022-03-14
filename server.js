@@ -123,7 +123,7 @@ io.on('connection', function(socket){
 	  {
   
 	   // send current user position and  rotation in broadcast to all clients in game
-       socket.broadcast.emit('ON_UPDATE_SOUND', currentUser.id);
+       socket.broadcast.emit('ON_UPDATE_SOUND', currentUser.id,currentUser.name);
 	
       
        }
