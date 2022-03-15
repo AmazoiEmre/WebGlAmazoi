@@ -12,7 +12,7 @@ app.use("/public/TemplateData",express.static(__dirname + "/public/TemplateData"
 app.use("/public/Build",express.static(__dirname + "/public/Build"));
 app.use(express.static(__dirname+'/public'));
 
-var clients			= [];// to storage clients
+var clients	= [];// to storage clients
 var clientLookup = {};// clients search engine
 var sockets = {};//// to storage sockets
 
@@ -121,11 +121,10 @@ io.on('connection', function(socket){
 	  
 	  if(currentUser)
 	  {
-  
+		  
 	   // send current user position and  rotation in broadcast to all clients in game
        socket.broadcast.emit('ON_UPDATE_SOUND', currentUser.id,currentUser.name);
-	
-      
+	   
        }
 	});//END_SOCKET_ON
 	
